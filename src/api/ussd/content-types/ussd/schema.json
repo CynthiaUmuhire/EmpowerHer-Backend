@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ussds",
+  "info": {
+    "singularName": "ussd",
+    "pluralName": "ussds",
+    "displayName": "ussd",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "text": {
+      "type": "string"
+    },
+    "sessionID": {
+      "type": "string"
+    },
+    "phoneNumber": {
+      "type": "string"
+    }
+  }
+}
