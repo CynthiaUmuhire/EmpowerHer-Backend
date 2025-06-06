@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "registrations",
+  "info": {
+    "singularName": "registration",
+    "pluralName": "registrations",
+    "displayName": "Registration"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "mother": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::mother.mother",
+      "inversedBy": "registrations"
+    },
+    "group": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::group.group",
+      "inversedBy": "registrations"
+    },
+    "registrationStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Pending",
+        "Approved",
+        "Declined",
+        "Completed"
+      ],
+      "default": "Pending",
+      "required": true
+    },
+    "notes": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean"
+    }
+  }
+}

@@ -14,10 +14,12 @@ export default factories.createCoreController('api::ussd.ussd', function () {
             const { phoneNumber, text, email } = ctx.request.body;
 
             const initialMenu = `CON Welcome EmpowerHer registration portal. \n 1. Register here \n 2.My credentials `
-
             const registrationMenu = `CON Type a password you wish to use \n 0. Go back`
 
             let response = ''
+            
+            //TODO: give users an option to input their preferred language
+            let language = "kinya"
 
             if (`1*${password}*1` === text) {
 
@@ -38,6 +40,7 @@ export default factories.createCoreController('api::ussd.ussd', function () {
                             blocked: false,
                             role: defaultRole.id,
                             provider: "local",
+                            language: language
                         }
                     });
 

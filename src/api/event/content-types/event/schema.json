@@ -38,6 +38,17 @@
     "location": {
       "type": "string",
       "required": true
+    },
+    "group": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::group.group",
+      "inversedBy": "events"
+    },
+    "isRecurring": {
+      "type": "boolean",
+      "default": false,
+      "required": true
     }
   }
 }

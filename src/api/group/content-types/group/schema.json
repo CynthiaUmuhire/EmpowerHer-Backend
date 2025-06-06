@@ -4,7 +4,8 @@
   "info": {
     "singularName": "group",
     "pluralName": "groups",
-    "displayName": "Group"
+    "displayName": "Group",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -21,6 +22,47 @@
     },
     "members": {
       "type": "integer"
+    },
+    "facilitator": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "assistantContact": {
+      "type": "integer"
+    },
+    "email": {
+      "type": "email"
+    },
+    "website": {
+      "type": "string"
+    },
+    "isVerified": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "groupStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Active",
+        "Inactive",
+        "Reviewing"
+      ],
+      "default": "Active",
+      "required": true
+    },
+    "events": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::event.event",
+      "mappedBy": "group"
+    },
+    "registrations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::registration.registration",
+      "mappedBy": "group"
     }
   }
 }
