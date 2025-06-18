@@ -19,5 +19,8 @@
         "titleBar.inactiveForeground": "#e7e7e799"
     },
     "peacock.color": "#800000",
-    "cmake.sourceDirectory": "/Users/cynthia/trial-ussd/Backend/node_modules/bare-fs"
+    "cmake.sourceDirectory": "/Users/cynthia/trial-ussd/Backend/node_modules/bare-fs",
+    "cSpell.words": [
+        "ussd"
+    ]
 }

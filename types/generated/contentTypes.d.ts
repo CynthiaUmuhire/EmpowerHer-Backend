@@ -537,6 +537,38 @@ export interface ApiRegistrationRegistration
   };
 }
 
+export interface ApiUssdSessionUssdSession extends Struct.CollectionTypeSchema {
+  collectionName: 'ussd_sessions';
+  info: {
+    description: '';
+    displayName: 'Ussd-session';
+    pluralName: 'ussd-sessions';
+    singularName: 'ussd-session';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    data: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ussd-session.ussd-session'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sessionId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiUssdUssd extends Struct.CollectionTypeSchema {
   collectionName: 'ussds';
   info: {
@@ -1047,6 +1079,9 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    phoneNumber: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1080,6 +1115,7 @@ declare module '@strapi/strapi' {
       'api::group.group': ApiGroupGroup;
       'api::mother.mother': ApiMotherMother;
       'api::registration.registration': ApiRegistrationRegistration;
+      'api::ussd-session.ussd-session': ApiUssdSessionUssdSession;
       'api::ussd.ussd': ApiUssdUssd;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

@@ -69,6 +69,11 @@
       "type": "string",
       "default": "kinya",
       "required": true
+    },
+    "phoneNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
     }
   }
 }

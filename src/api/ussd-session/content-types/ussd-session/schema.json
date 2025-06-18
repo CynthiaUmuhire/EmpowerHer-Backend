@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ussd_sessions",
+  "info": {
+    "singularName": "ussd-session",
+    "pluralName": "ussd-sessions",
+    "displayName": "Ussd-session",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "data": {
+      "type": "json"
+    },
+    "sessionId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    }
+  }
+}
