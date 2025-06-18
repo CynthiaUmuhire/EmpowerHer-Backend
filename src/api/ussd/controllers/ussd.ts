@@ -3,7 +3,6 @@
 //  */
 
 // import { factories } from "@strapi/strapi";
-import bcrypt from 'bcryptjs'
 import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::ussd.ussd', function () {
@@ -13,46 +12,33 @@ export default factories.createCoreController('api::ussd.ussd', function () {
         async create(ctx) {
             const { phoneNumber, text, email } = ctx.request.body;
 
-            const initialMenu = `CON Welcome EmpowerHer registration portal. \n 1. Register here \n 2.My credentials `
+            const initialMenu = `CON Welcome EmpowerHer registration portal. \n 1.Start registration `
             const registrationMenu = `CON Type a password you wish to use \n 0. Go back`
+            const usernameMenu = `CON Your username is ${phoneNumber} by default. \n 1.Change it. \n 2. Next \n 0. Go back`
 
             let response = ''
-            
+
             //TODO: give users an option to input their preferred language
             let language = "kinya"
+            let role: 'facilitator' | 'mother' = 'mother';
+            let username = phoneNumber;
+
 
             if (`1*${password}*1` === text) {
+                const language = "kinya";
+                const result = await strapi.service('api::ussd.ussd').createUser({
+                    phoneNumber,
+                    password,
+                    email,
+                    language,
+                    role
+                });
 
-                try {
-                    const defaultRole = await strapi.query("plugin::users-permissions.role").findOne({
-                        where: { type: "authenticated" },
-                    });
-
-                    const hashedPassword = await bcrypt.hash(password, 10);
-                    console.log('password ====', password)
-
-                    const newuser = await strapi.documents("plugin::users-permissions.user").create({
-                        data: {
-                            username: phoneNumber,
-                            password: hashedPassword,
-                            email: email,
-                            confirmed: false,
-                            blocked: false,
-                            role: defaultRole.id,
-                            provider: "local",
-                            language: language
-                        }
-                    });
-
-                    console.log('user', newuser)
-                    response = `CON Registration successful 🎊`
-
-                    return response
-                } catch (error) {
-                    console.log('error', error)
-                    response = `CON An error occured! \n 0. try password again`
-                    password = ''
-                    return response
+                if (result.success) {
+                    return `CON Registration successful 🎊`;
+                } else {
+                    password = '';
+                    return `CON An error occured! \n 0. try password again`;
                 }
             }
 
@@ -87,19 +73,10 @@ export default factories.createCoreController('api::ussd.ussd', function () {
                     break;
                 // Registration
                 case '1':
-                    response = registrationMenu
+                    response = usernameMenu
                     break;
-
-                // registration ends
-                case '1*0':
-                    response = initialMenu
-                    break;
-                case '2':
-                    response = `CON Your number is${phoneNumber} \n 0. Go back`
-                    break;
-                case '2*0':
-                    response = initialMenu
-                    break;
+                case '1*':
+                    response = usernameMenu
                 default:
                     console.log('text', text, text.startsWith('2*'))
                     response = `END Invalid option= ${text}`
