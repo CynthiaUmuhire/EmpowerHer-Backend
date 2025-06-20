@@ -74,6 +74,13 @@
       "type": "string",
       "required": true,
       "unique": true
+    },
+    "profilePicture": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
