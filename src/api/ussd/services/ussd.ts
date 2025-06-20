@@ -8,6 +8,13 @@ export default {
             });
 
             const hashedPassword = await bcrypt.hash(password, 10);
+            const existingUser = await strapi.db.query("plugin::users-permissions.user").findOne({
+                where: { phoneNumber: phoneNumber },
+            });
+
+            if (existingUser) {
+                throw new Error("User with this phone number already exists.");
+            }
 
             const newUser = await strapi.db.query("plugin::users-permissions.user").create({
                 data: {
@@ -25,7 +32,7 @@ export default {
 
             return { success: true, user: newUser };
         } catch (error) {
-            return { success: false, error };
+            throw error;
         }
     }
 };

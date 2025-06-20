@@ -7,7 +7,6 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
         async create(ctx) {
             try {
                 const { phoneNumber, text, sessionId, serviceCode } = ctx.request.body;
-                console.log('Startinggggggg')
                 if (!sessionId) {
                     ctx.body = 'END Session error. Please try again.';
                     return;
@@ -28,6 +27,34 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                 return ctx.badRequest('END An error occurred. Please try again later.');
             }
 
+        },
+        async registerUserFromWeb(ctx) {
+            try {
+                const { phoneNumber, password, username, role, email } = ctx.request.body.data;
+                if (!phoneNumber) {
+                    return ctx.badRequest(' Phone number is required. Please provide your phone number.');
+                }
+                if (!password) {
+                    return ctx.badRequest(' Password is required. Please provide a password.');
+                }
+                if (!role) {
+                    return ctx.badRequest(' Role is required. Please select a role.');
+                }
+
+                const language = "kinya";
+
+                const result = await strapi.service('api::ussd.ussd').createUser({
+                    phoneNumber,
+                    password,
+                    email,
+                    language,
+                    role,
+                    username: username || phoneNumber
+                })
+                return super.transformResponse(result);
+            } catch (error) {
+                throw error;
+            }
         }
     }
 });
