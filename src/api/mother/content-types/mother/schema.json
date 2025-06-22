@@ -35,12 +35,6 @@
     },
     "shortBio": {
       "type": "text"
-    },
-    "registrations": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::registration.registration",
-      "mappedBy": "mother"
     }
   }
 }

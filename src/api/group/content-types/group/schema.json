@@ -23,10 +23,10 @@
     "members": {
       "type": "integer"
     },
-    "facilitator": {
+    "facilitators": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user"
+      "relation": "oneToMany",
+      "target": "admin::user"
     },
     "assistantContact": {
       "type": "integer"
@@ -63,6 +63,20 @@
       "relation": "oneToMany",
       "target": "api::registration.registration",
       "mappedBy": "group"
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "approvedMembers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "approvedGroups"
     }
   }
 }

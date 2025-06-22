@@ -416,17 +416,19 @@ export interface ApiGroupGroup extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    approvedMembers: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     assistantContact: Schema.Attribute.Integer;
+    coverImage: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     email: Schema.Attribute.Email;
     events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
-    facilitator: Schema.Attribute.Relation<
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
+    facilitators: Schema.Attribute.Relation<'oneToMany', 'admin::user'>;
     groupStatus: Schema.Attribute.Enumeration<
       ['Active', 'Inactive', 'Reviewing']
     > &
@@ -484,10 +486,6 @@ export interface ApiMotherMother extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     numberOfChildren: Schema.Attribute.Integer & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    registrations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::registration.registration'
-    >;
     sector: Schema.Attribute.String;
     shortBio: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
@@ -504,6 +502,7 @@ export interface ApiRegistrationRegistration
   extends Struct.CollectionTypeSchema {
   collectionName: 'registrations';
   info: {
+    description: '';
     displayName: 'Registration';
     pluralName: 'registrations';
     singularName: 'registration';
@@ -516,14 +515,17 @@ export interface ApiRegistrationRegistration
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     group: Schema.Attribute.Relation<'manyToOne', 'api::group.group'>;
-    isActive: Schema.Attribute.Boolean;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::registration.registration'
     > &
       Schema.Attribute.Private;
-    mother: Schema.Attribute.Relation<'manyToOne', 'api::mother.mother'>;
+    mothers: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     notes: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     registrationStatus: Schema.Attribute.Enumeration<
@@ -1054,6 +1056,7 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
+    approvedGroups: Schema.Attribute.Relation<'manyToMany', 'api::group.group'>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1085,6 +1088,10 @@ export interface PluginUsersPermissionsUser
     profilePicture: Schema.Attribute.Media<'images'>;
     provider: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    registrations: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::registration.registration'
+    >;
     resetPasswordToken: Schema.Attribute.String & Schema.Attribute.Private;
     role: Schema.Attribute.Relation<
       'manyToOne',

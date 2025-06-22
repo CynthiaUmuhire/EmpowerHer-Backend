@@ -76,11 +76,24 @@
       "unique": true
     },
     "profilePicture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
+    },
+    "registrations": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::registration.registration",
+      "mappedBy": "mothers"
+    },
+    "approvedGroups": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::group.group",
+      "mappedBy": "approvedMembers"
     }
   }
 }
