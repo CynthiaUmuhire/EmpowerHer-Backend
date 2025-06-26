@@ -27,19 +27,19 @@ export default async function registrationFlow(menu, strapi) {
             menu.con('Welcome to EmpowerHer registration portal. \n 1. Start registration');
         },
         next: {
-            '1': '1',
+            '1': 'beginRegistration',
             '*': 'invalid_input'
         }
     });
 
-    menu.state('1', {
+    menu.state('beginRegistration', {
         run: () => {
             console.log('Entering state 1'),
                 menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
         },
         next: {
             '1': '1.1',
-            '2': 'passwordMenu',
+            '2': 'firstnameMenu',
             '0': 'start'
         }
     });
@@ -61,20 +61,64 @@ export default async function registrationFlow(menu, strapi) {
             menu.con(`Username set to: ${newUsername}. \n 1. Next \n 0. Go back`);
         },
         next: {
-            '1': 'passwordMenu',
+            '1': 'firstnameMenu',
             '0': '1'
+        }
+    });
+    menu.state('firstnameMenu', {
+        run: () => {
+            menu.con('Enter your first name:');
+        },
+        next: {
+            '*': 'handleUserFirstnameInput'
+        }
+    });
+
+    menu.state('handleUserFirstnameInput', {
+        run: async () => {
+            const firstname = menu.val;
+            await menu.session.set('firstname', firstname);
+            menu.con(`First name set to: ${firstname}. \n Now please enter your last name:`);
+        },
+        next: {
+            '*': 'handleUserLastnameInput',
+            '0': 'firstnameMenu'
         }
     });
 
 
-    menu.state('passwordMenu', {
+    menu.state('handleUserLastnameInput', {
         run: async () => {
-            menu.con('Type a password you wish to use \n 0. Go back')
-            await menu.session.set('next_action', 'enter_password');
+            const lastname = menu.val;
+            await menu.session.set('lastname', lastname);
+            menu.con(`Last name saved to ${lastname} \n Enter your email address (or type 0 to skip):`)
+        },
+        next: {
+            '*': 'handleUserEmailInput',
+            '0': 'firstnameMenu'
+        }
+    });
+
+    menu.state('handleUserEmailInput', {
+        run: async () => {
+            let email = menu.val;
+            if (email === '0') email = '';
+            await menu.session.set('email', email)
+            menu.con(`Email saved to ${email} \n Now, please enter a password for your account: \n 0. Go back`);
         },
         next: {
             '*': 'handleUserPasswordInput',
-            '0': '1'
+            '0': 'handleUserLastnameInput'
+        }
+    });
+
+    menu.state('passwordMenu', {
+        run: async () => {
+            menu.con('Type a password you wish to use \n 0. Go back')
+        },
+        next: {
+            '*': 'handleUserPasswordInput',
+            '0': 'emailMenu'
         }
     });
 
@@ -142,6 +186,9 @@ export default async function registrationFlow(menu, strapi) {
             const password = await menu.session.get('password');
             const username = await menu.session.get('username') || phoneNumber;
             const selectedRole = await menu.session.get('role');
+            const firstname = await menu.session.get('firstname');
+            const lastname = await menu.session.get('lastname') || 'User';
+            const email = await menu.session.get('email')
 
             console.log('Registering user with data:', {
                 phoneNumber,
@@ -150,7 +197,6 @@ export default async function registrationFlow(menu, strapi) {
                 selectedRole
             });
             const language = "kinya";
-            const email = '';
 
             if (!password || !selectedRole) {
                 menu.end('Registration data incomplete. Please restart. 😔');
@@ -164,7 +210,9 @@ export default async function registrationFlow(menu, strapi) {
                     email,
                     language,
                     role: selectedRole,
-                    username
+                    username,
+                    firstname,
+                    lastname
                 });
 
                 console.log('Registration result:', result, '-------------');

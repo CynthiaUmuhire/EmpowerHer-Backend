@@ -94,6 +94,12 @@
       "relation": "manyToMany",
       "target": "api::group.group",
       "mappedBy": "approvedMembers"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "firstName": {
+      "type": "string"
     }
   }
 }

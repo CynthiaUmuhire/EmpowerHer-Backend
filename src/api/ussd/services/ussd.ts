@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 
 export default {
-    createUser: async ({ username, phoneNumber, password, email, language, role }) => {
+    createUser: async ({ username, phoneNumber, password, email, language, role, firstname, lastname }) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const existingUser = await strapi.db.query("plugin::users-permissions.user").findOne({
             where: { phoneNumber: phoneNumber },
@@ -18,8 +18,8 @@ export default {
                     where: { code: 'strapi-author' },
                 });
                 const admin = await strapi.admin.services.user.create({
-                    firstname: username,
-                    lastname: 'Facilitator',
+                    firstname: firstname,
+                    lastname: lastname,
                     email,
                     password,
                     username,
@@ -44,6 +44,8 @@ export default {
                         provider: "local",
                         language: language,
                         phoneNumber: phoneNumber,
+                        firstName: firstname,
+                        lastName: lastname || 'User'
                     }
                 });
 
