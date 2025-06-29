@@ -12,7 +12,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "tile": {
+    "title": {
       "type": "string",
       "required": true
     },
@@ -49,6 +49,22 @@
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "eventStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Upcoming",
+        "Cancelled",
+        "Completed"
+      ],
+      "default": "Upcoming",
+      "required": true
+    },
+    "rsvps": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::rsvp.rsvp",
+      "mappedBy": "event"
     }
   }
 }

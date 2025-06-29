@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rsvps",
+  "info": {
+    "singularName": "rsvp",
+    "pluralName": "rsvps",
+    "displayName": "rsvp",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "rsvps"
+    },
+    "event": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::event.event",
+      "inversedBy": "rsvps"
+    },
+    "rsvpValue": {
+      "type": "enumeration",
+      "enum": [
+        "Maybe",
+        "Reserve",
+        "Decline"
+      ]
+    }
+  }
+}

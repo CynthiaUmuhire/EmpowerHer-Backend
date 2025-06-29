@@ -30,7 +30,7 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
         },
         async registerUserFromWeb(ctx) {
             try {
-                const { phoneNumber, password, username, role, email } = ctx.request.body.data;
+                const { phoneNumber, password, username, role, email, firstname, lastname } = ctx.request.body.data;
                 if (!phoneNumber) {
                     return ctx.badRequest(' Phone number is required. Please provide your phone number.');
                 }
@@ -39,6 +39,15 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                 }
                 if (!role) {
                     return ctx.badRequest(' Role is required. Please select a role.');
+                }
+                if (!email) {
+                    return ctx.badRequest(' Email is required. Please provide your email address.');
+                }
+                if (!firstname) {
+                    return ctx.badRequest(' First name is required. Please provide your first name.');
+                }
+                if (!lastname) {
+                    return ctx.badRequest(' Last name is required. Please provide your last name.');
                 }
 
                 const language = "kinya";
@@ -49,7 +58,9 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                     email,
                     language,
                     role,
-                    username: username || phoneNumber
+                    username: username || phoneNumber,
+                    firstname,
+                    lastname
                 })
                 return super.transformResponse(result);
             } catch (error) {

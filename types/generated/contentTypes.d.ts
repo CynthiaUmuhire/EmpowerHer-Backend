@@ -386,6 +386,11 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     endDate: Schema.Attribute.DateTime;
+    eventStatus: Schema.Attribute.Enumeration<
+      ['Upcoming', 'Cancelled', 'Completed']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Upcoming'>;
     group: Schema.Attribute.Relation<'manyToOne', 'api::group.group'>;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     isRecurring: Schema.Attribute.Boolean &
@@ -396,8 +401,9 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     location: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    rsvps: Schema.Attribute.Relation<'oneToMany', 'api::rsvp.rsvp'>;
     startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    tile: Schema.Attribute.String & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -536,6 +542,37 @@ export interface ApiRegistrationRegistration
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiRsvpRsvp extends Struct.CollectionTypeSchema {
+  collectionName: 'rsvps';
+  info: {
+    description: '';
+    displayName: 'rsvp';
+    pluralName: 'rsvps';
+    singularName: 'rsvp';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    event: Schema.Attribute.Relation<'manyToOne', 'api::event.event'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::rsvp.rsvp'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    rsvpValue: Schema.Attribute.Enumeration<['Maybe', 'Reserve', 'Decline']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 
@@ -1099,6 +1136,7 @@ export interface PluginUsersPermissionsUser
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    rsvps: Schema.Attribute.Relation<'oneToMany', 'api::rsvp.rsvp'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1125,6 +1163,7 @@ declare module '@strapi/strapi' {
       'api::group.group': ApiGroupGroup;
       'api::mother.mother': ApiMotherMother;
       'api::registration.registration': ApiRegistrationRegistration;
+      'api::rsvp.rsvp': ApiRsvpRsvp;
       'api::ussd-session.ussd-session': ApiUssdSessionUssdSession;
       'api::ussd.ussd': ApiUssdUssd;
       'plugin::content-releases.release': PluginContentReleasesRelease;
