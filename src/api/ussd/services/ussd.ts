@@ -45,7 +45,7 @@ export default {
                         language: language,
                         phoneNumber: phoneNumber,
                         firstName: firstname,
-                        lastName: lastname || 'User'
+                        lastName: lastname
                     }
                 });
 
