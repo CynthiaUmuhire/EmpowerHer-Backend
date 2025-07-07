@@ -106,6 +106,15 @@
       "relation": "oneToMany",
       "target": "api::rsvp.rsvp",
       "mappedBy": "user"
+    },
+    "district": {
+      "type": "string"
+    },
+    "shotBio": {
+      "type": "text"
+    },
+    "age": {
+      "type": "string"
     }
   }
 }

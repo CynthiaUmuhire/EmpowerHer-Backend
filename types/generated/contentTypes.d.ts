@@ -460,50 +460,6 @@ export interface ApiGroupGroup extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiMotherMother extends Struct.CollectionTypeSchema {
-  collectionName: 'mothers';
-  info: {
-    description: '';
-    displayName: 'mother';
-    pluralName: 'mothers';
-    singularName: 'mother';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    age: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          min: 0;
-        },
-        number
-      >;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    district: Schema.Attribute.String & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::mother.mother'
-    > &
-      Schema.Attribute.Private;
-    numberOfChildren: Schema.Attribute.Integer & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    sector: Schema.Attribute.String;
-    shortBio: Schema.Attribute.Text;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-  };
-}
-
 export interface ApiRegistrationRegistration
   extends Struct.CollectionTypeSchema {
   collectionName: 'registrations';
@@ -1093,6 +1049,7 @@ export interface PluginUsersPermissionsUser
     draftAndPublish: false;
   };
   attributes: {
+    age: Schema.Attribute.String;
     approvedGroups: Schema.Attribute.Relation<'manyToMany', 'api::group.group'>;
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1100,6 +1057,7 @@ export interface PluginUsersPermissionsUser
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    district: Schema.Attribute.String;
     email: Schema.Attribute.Email &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
@@ -1137,6 +1095,7 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.role'
     >;
     rsvps: Schema.Attribute.Relation<'oneToMany', 'api::rsvp.rsvp'>;
+    shotBio: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1161,7 +1120,6 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::event.event': ApiEventEvent;
       'api::group.group': ApiGroupGroup;
-      'api::mother.mother': ApiMotherMother;
       'api::registration.registration': ApiRegistrationRegistration;
       'api::rsvp.rsvp': ApiRsvpRsvp;
       'api::ussd-session.ussd-session': ApiUssdSessionUssdSession;
