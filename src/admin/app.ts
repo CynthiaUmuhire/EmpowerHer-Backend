@@ -1,6 +1,17 @@
 import Logo from "./extensions/logo.png";
+import favicon from './extensions/favicon.ico';
 export default {
   config: {
+    head: {
+      favicon: favicon,
+      title: "EmpowerHer Admin",
+      meta: [
+        {
+          name: "description",
+          content: "EmpowerHer Admin Panel",
+        },
+      ],
+    },
     auth: {
       logo: Logo,
     },
@@ -19,19 +30,13 @@ export default {
         },
       },
     },
-    // Extend the translations
     translations: {
-      fr: {
-        "Auth.form.email.label": "test",
-        Users: "Utilisateurs",
-        City: "CITY (FRENCH)",
-        // Customize the label of the Content Manager table.
-        Id: "ID french",
-      },
+      en: {
+        'Auth.form.welcome.title': 'EmpowerHer Admin Panel',
+        'Auth.form.welcome.subtitle': 'Sign in to manage your content',
+      }
     },
-    // Disable video tutorials
     tutorials: false,
-    // Disable notifications about new Strapi releases
     notifications: { releases: false },
   },
 
