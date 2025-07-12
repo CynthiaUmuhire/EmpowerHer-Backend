@@ -432,6 +432,7 @@ export interface ApiGroupGroup extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
+    district: Schema.Attribute.String;
     email: Schema.Attribute.Email;
     events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
     facilitators: Schema.Attribute.Relation<'oneToMany', 'admin::user'>;
