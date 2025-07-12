@@ -1,16 +1,22 @@
-export default async function registrationFlow(menu, strapi) {
+import UssdMenu from "ussd-menu-builder";
+import eventsGroupsFlow from "./eventsGroupsFlow";
+import registrationFlow from "./registrationFlow";
+import { Core } from "@strapi/strapi";
+
+export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.startState({
         run: () => {
-            menu.con('Welcome to EmpowerHer registration portal. \n 1. Start registration');
+            menu.con('CON Welcome to EmpowerHer portal.\n1. Register\n2. Events & Groups');
         },
         next: {
-            '1': 'beginRegistration',
+            '1': 'register',
+            '2': 'eventsGroups',
             '*': 'invalid_input'
         }
     });
 
-    menu.state('beginRegistration', {
+    menu.state('register', {
         run: () => {
             console.log('Entering state 1'),
                 menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
@@ -21,7 +27,6 @@ export default async function registrationFlow(menu, strapi) {
             '0': 'start'
         }
     });
-
     menu.state('1.1', {
         run: () => {
             menu.con('Enter your preferred username:');
@@ -208,6 +213,34 @@ export default async function registrationFlow(menu, strapi) {
         }
     });
 
+    menu.state('eventsGroups', {
+        run: () => {
+            menu.con('Welcome to Events & Groups!\n1. View Events\n2. View Groups\n0. Main Menu');
+        },
+        next: {
+            '1': 'eventsGroups.viewEvents',
+            '2': 'eventsGroups.viewGroups',
+            '0': 'start'
+        }
+    });
+
+    menu.state('eventsGroups.viewEvents', {
+        run: () => {
+            menu.con('Events list coming soon!\n0. Back');
+        },
+        next: {
+            '0': 'eventsGroups'
+        }
+    });
+
+    menu.state('eventsGroups.viewGroups', {
+        run: () => {
+            menu.con('Groups list coming soon!\n0. Back');
+        },
+        next: {
+            '0': 'eventsGroups'
+        }
+    });
 
     menu.state('invalid_input', {
         run: () => {
@@ -219,5 +252,4 @@ export default async function registrationFlow(menu, strapi) {
         console.error('USSD Menu Error:', err);
         menu.end('END An internal error occurred. Please try again later.');
     });
-
 }

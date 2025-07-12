@@ -1,5 +1,28 @@
 import { Core, factories } from '@strapi/strapi';
-import menu from '../../../util/menuInstance';
+import UssdMenu from 'ussd-menu-builder';
+import globalFlow from '../../../util/globalFlow';
+
+const menu = new UssdMenu();
+menu.sessionConfig({
+    start: async (sessionId, callback) => {
+        await strapi.service('api::ussd-session.ussd-session').start(sessionId);
+        callback(null, {});
+    },
+    end: async (sessionId, callback) => {
+        await strapi.service('api::ussd-session.ussd-session').end(sessionId);
+        callback(null);
+    },
+    get: async (sessionId, key, callback) => {
+        const value = await strapi.service('api::ussd-session.ussd-session').get(sessionId, key);
+        if (callback) callback(null, value);
+        return value;
+    },
+    set: async (sessionId, key, value, callback) => {
+        await strapi.service('api::ussd-session.ussd-session').set(sessionId, key, value);
+        if (callback) callback(null);
+    }
+});
+globalFlow(menu, strapi);
 
 
 export default factories.createCoreController('api::ussd.ussd', function ({ strapi }: { strapi: Core.Strapi }) {
@@ -18,7 +41,13 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                     text: text || '',
                     serviceCode: serviceCode || ''
                 };
+                console.log('Processing USSD request with args:', args);
                 const ussdResponse = await menu.run(args);
+                console.log('USSD response:', ussdResponse);
+                if (!ussdResponse) {
+                    ctx.body = 'END An error occurred while processing your request. Please try again later.';
+                    return;
+                }
 
                 ctx.body = ussdResponse;
 
