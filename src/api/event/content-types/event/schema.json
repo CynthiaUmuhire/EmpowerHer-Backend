@@ -65,6 +65,9 @@
       "relation": "oneToMany",
       "target": "api::rsvp.rsvp",
       "mappedBy": "event"
+    },
+    "plannerContact": {
+      "type": "string"
     }
   }
 }

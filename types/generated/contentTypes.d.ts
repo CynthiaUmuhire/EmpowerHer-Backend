@@ -400,6 +400,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
       Schema.Attribute.Private;
     location: Schema.Attribute.String & Schema.Attribute.Required;
+    plannerContact: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     rsvps: Schema.Attribute.Relation<'oneToMany', 'api::rsvp.rsvp'>;
     startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;

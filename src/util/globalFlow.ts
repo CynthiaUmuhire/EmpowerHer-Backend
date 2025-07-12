@@ -224,23 +224,110 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
         }
     });
 
+
     menu.state('eventsGroups.viewEvents', {
-        run: () => {
-            menu.con('Events list coming soon!\n0. Back');
+        run: async () => {
+            let page = await menu.session.get('eventsPage') || 1;
+            try {
+                const events = await strapi.service('api::event.event').find({ _limit: 3, _start: (page - 1) * 3, populate: ['group'] });
+                if (events && events.results && events.results.length > 0) {
+                    await menu.session.set('lastEvents', events.results);
+                    let msg = 'Events:\n';
+                    events.results.forEach((event, idx) => {
+                        msg += `${idx + 1}. ${event.title}\n`;
+                    });
+                    msg += '9. Next\n0. Back';
+                    menu.con(msg);
+                } else {
+                    menu.con('No events found.\n0. Back');
+                }
+            } catch (err) {
+                menu.con('Error fetching events.\n0. Back');
+            }
         },
         next: {
-            '0': 'eventsGroups'
+            '0': async () => { await menu.session.set('eventsPage', 1); return 'eventsGroups'; },
+            '9': async () => { let page = await menu.session.get('eventsPage') || 1; await menu.session.set('eventsPage', page + 1); return 'eventsGroups.viewEvents'; },
+            '*': 'eventsGroups.eventDetails'
+        }
+    });
+
+    menu.state('eventsGroups.eventDetails', {
+        run: async () => {
+            const selection = parseInt(menu.val, 10);
+            const events = await menu.session.get('lastEvents') || [];
+            if (!isNaN(selection) && events[selection - 1]) {
+                const event = events[selection - 1];
+                let contact = '';
+                if (event.group && event.group.assistantContact) {
+                    contact = event.group.assistantContact;
+                } else if (event.plannerContact) {
+                    contact = event.plannerContact;
+                } else {
+                    contact = 'Sorry could not find the contacts now. Try again later';
+                }
+                menu.con(`Event: ${event.title}\nContact: ${contact}\n0. Back`);
+            } else {
+                menu.con('Invalid selection.\n0. Back');
+            }
+        },
+        next: {
+            '0': 'eventsGroups.viewEvents',
+            '*': 'eventsGroups.eventDetails'
         }
     });
 
     menu.state('eventsGroups.viewGroups', {
-        run: () => {
-            menu.con('Groups list coming soon!\n0. Back');
+        run: async () => {
+            let page = await menu.session.get('groupsPage') || 1;
+            try {
+                const groups = await strapi.service('api::group.group').find({ _limit: 3, _start: (page - 1) * 3 });
+                if (groups && groups.results && groups.results.length > 0) {
+                    await menu.session.set('lastGroups', groups.results);
+                    let msg = 'Groups:\n';
+                    groups.results.forEach((group, idx) => {
+                        msg += `${idx + 1}. ${group.name}\n`;
+                    });
+                    msg += '9. Next\n0. Back';
+                    menu.con(msg);
+                } else {
+                    menu.con('No groups found.\n0. Back');
+                }
+            } catch (err) {
+                menu.con('Error fetching groups.\n0. Back');
+            }
         },
         next: {
-            '0': 'eventsGroups'
+            '0': async () => { await menu.session.set('groupsPage', 1); return 'eventsGroups'; },
+            '9': async () => { let page = await menu.session.get('groupsPage') || 1; await menu.session.set('groupsPage', page + 1); return 'eventsGroups.viewGroups'; },
+            '*': 'eventsGroups.groupDetails'
         }
     });
+
+    menu.state('eventsGroups.groupDetails', {
+        run: async () => {
+            const selection = parseInt(menu.val, 10);
+            const groups = await menu.session.get('lastGroups') || [];
+            if (!isNaN(selection) && groups[selection - 1]) {
+                const group = groups[selection - 1];
+                let contact = '';
+                if (group.assistantContact) {
+                    contact = group.assistantContact;
+                } else {
+                    contact = 'N/A';
+                }
+                menu.con(`Group: ${group.name}\nContact: ${contact}\n0. Back`);
+            } else {
+                menu.con('Invalid selection.\n0. Back');
+            }
+        },
+        next: {
+            '0': 'eventsGroups.viewGroups',
+            '*': 'eventsGroups.groupDetails'
+        }
+    });
+
+
 
     menu.state('invalid_input', {
         run: () => {
