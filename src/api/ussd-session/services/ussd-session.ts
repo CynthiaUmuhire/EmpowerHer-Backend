@@ -40,7 +40,6 @@ export default factories.createCoreService('api::ussd-session.ussd-session', ({ 
             await strapi.db.query('api::ussd-session.ussd-session').delete({
                 where: { sessionId },
             });
-            console.log(`Ended session for sessionId: ${sessionId}`);
         } catch (error) {
             console.error(`Error ending session ${sessionId}:`, error);
             throw new Error('Failed to end session');
@@ -65,7 +64,6 @@ export default factories.createCoreService('api::ussd-session.ussd-session', ({ 
             }
 
             const value = session.data[key];
-            console.log(`Retrieved ${key}=${value} for sessionId: ${sessionId}`);
             return value;
         } catch (error) {
             console.error(`Error getting key ${key} for session ${sessionId}:`, error);
@@ -82,31 +80,26 @@ export default factories.createCoreService('api::ussd-session.ussd-session', ({ 
      */
     async set(sessionId, key, value) {
         try {
-            console.log(`Setting ${key}=${value} for sessionId: ${sessionId}`);
             const session = await strapi.db.query('api::ussd-session.ussd-session').findOne({
                 where: { sessionId },
             });
 
             if (!session) {
                 // Create a new session with the key-value pair
-                const newSession = await strapi.db.query('api::ussd-session.ussd-session').create({
+                await strapi.db.query('api::ussd-session.ussd-session').create({
                     data: { sessionId, data: { [key]: value } },
                 });
-                console.log(`Created session with data: ${JSON.stringify(newSession.data)}`);
                 return;
             }
 
             // Merge new key-value pair with existing data
             const updatedData = { ...session.data, [key]: value };
-            console.log(`Merged session data: ${JSON.stringify(updatedData)}`);
 
             // Update the session with the merged data
             const updatedSession = await strapi.db.query('api::ussd-session.ussd-session').update({
                 where: { sessionId },
                 data: { data: updatedData },
             });
-
-            console.log(`Updated session data: ${JSON.stringify(updatedSession.data)}`);
         } catch (error) {
             console.error(`Error setting ${key}=${value} for session ${sessionId}:`, error);
             throw new Error('Failed to set session data');

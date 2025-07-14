@@ -73,7 +73,7 @@ export default async function registrationFlow(menu, strapi) {
         },
         next: {
             '*': 'handleUserEmailInput',
-            '0': 'firstnameMenu'
+            '0': 'handleUserPasswordInput'
         }
     });
 

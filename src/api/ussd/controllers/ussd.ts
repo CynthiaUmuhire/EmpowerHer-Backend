@@ -41,9 +41,7 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                     text: text || '',
                     serviceCode: serviceCode || ''
                 };
-                console.log('Processing USSD request with args:', args);
                 const ussdResponse = await menu.run(args);
-                console.log('USSD response:', ussdResponse);
                 if (!ussdResponse) {
                     ctx.body = 'END An error occurred while processing your request. Please try again later.';
                     return;

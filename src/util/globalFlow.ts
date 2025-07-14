@@ -1,13 +1,11 @@
 import UssdMenu from "ussd-menu-builder";
-import eventsGroupsFlow from "./eventsGroupsFlow";
-import registrationFlow from "./registrationFlow";
 import { Core } from "@strapi/strapi";
 
 export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.startState({
         run: () => {
-            menu.con('CON Welcome to EmpowerHer portal.\n1. Register\n2. Events & Groups');
+            menu.con('Welcome to EmpowerHer portal.\n1. Register\n2. Events & Groups');
         },
         next: {
             '1': 'register',
@@ -18,8 +16,7 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.state('register', {
         run: () => {
-            console.log('Entering state 1'),
-                menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
+            menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
         },
         next: {
             '1': '1.1',
@@ -78,7 +75,7 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
         },
         next: {
             '*': 'handleUserEmailInput',
-            '0': 'firstnameMenu'
+            '0': 'handleUserPasswordInput'
         }
     });
 
@@ -172,13 +169,6 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
             const firstname = await menu.session.get('firstname');
             const lastname = await menu.session.get('lastname') || 'User';
             const email = await menu.session.get('email')
-
-            console.log('Registering user with data:', {
-                phoneNumber,
-                password,
-                username,
-                selectedRole
-            });
             const language = "kinya";
 
             if (!password || !selectedRole) {
@@ -197,8 +187,6 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
                     firstname,
                     lastname
                 });
-
-                console.log('Registration result:', result, '-------------');
                 if (result.success) {
                     menu.end('Registration successful 🎊 Thank you for joining EmpowerHer!');
                 } else {
@@ -227,27 +215,28 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.state('eventsGroups.viewEvents', {
         run: async () => {
-            let page = await menu.session.get('eventsPage') || 1;
+            let page = await menu.session.get('eventsPage') || 0;
             try {
-                const events = await strapi.service('api::event.event').find({ _limit: 3, _start: (page - 1) * 3, populate: ['group'] });
+                const events = await strapi.service('api::event.event').find({ pagination: { page: page, pageSize: 5 }, populate: ['group'] });
+                menu.session.set('eventsPage', events.pagination.page);
                 if (events && events.results && events.results.length > 0) {
-                    await menu.session.set('lastEvents', events.results);
                     let msg = 'Events:\n';
                     events.results.forEach((event, idx) => {
                         msg += `${idx + 1}. ${event.title}\n`;
                     });
-                    msg += '9. Next\n0. Back';
+                    msg += 'n. Next\n0. Previous';
                     menu.con(msg);
                 } else {
-                    menu.con('No events found.\n0. Back');
+                    menu.con('No events found.\n0. Previous');
                 }
             } catch (err) {
-                menu.con('Error fetching events.\n0. Back');
+                console.error('Error fetching events:', err);
+                menu.con('Error fetching events.\n0. Previous');
             }
         },
         next: {
-            '0': async () => { await menu.session.set('eventsPage', 1); return 'eventsGroups'; },
-            '9': async () => { let page = await menu.session.get('eventsPage') || 1; await menu.session.set('eventsPage', page + 1); return 'eventsGroups.viewEvents'; },
+            '0': async () => { let page = await menu.session.get('eventsPage') || 0; await menu.session.set('eventsPage', page - 1 || 0); return 'eventsGroups.viewEvents'; },
+            'n': async () => { let page = await menu.session.get('eventsPage') || 0; await menu.session.set('eventsPage', page + 1); return 'eventsGroups.viewEvents'; },
             '*': 'eventsGroups.eventDetails'
         }
     });
@@ -279,16 +268,16 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.state('eventsGroups.viewGroups', {
         run: async () => {
-            let page = await menu.session.get('groupsPage') || 1;
+            let page = await menu.session.get('groupsPage');
             try {
-                const groups = await strapi.service('api::group.group').find({ _limit: 3, _start: (page - 1) * 3 });
+                const groups = await strapi.service('api::group.group').find({ pagination: { page: page, pageSize: 5 } });
+                menu.session.set('groupsPage', groups.pagination.page);
                 if (groups && groups.results && groups.results.length > 0) {
-                    await menu.session.set('lastGroups', groups.results);
                     let msg = 'Groups:\n';
                     groups.results.forEach((group, idx) => {
                         msg += `${idx + 1}. ${group.name}\n`;
                     });
-                    msg += '9. Next\n0. Back';
+                    msg += 'n. Next\n0. Back';
                     menu.con(msg);
                 } else {
                     menu.con('No groups found.\n0. Back');
@@ -298,9 +287,9 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
             }
         },
         next: {
-            '0': async () => { await menu.session.set('groupsPage', 1); return 'eventsGroups'; },
-            '9': async () => { let page = await menu.session.get('groupsPage') || 1; await menu.session.set('groupsPage', page + 1); return 'eventsGroups.viewGroups'; },
-            '*': 'eventsGroups.groupDetails'
+            '0': async () => { let page = await menu.session.get('groupsPage'); await menu.session.set('groupsPage', page - 1); return 'eventsGroups.viewGroups'; },
+            'n': async () => { let page = await menu.session.get('groupsPage'); await menu.session.set('groupsPage', page + 1); return 'eventsGroups.viewGroups'; },
+            '': 'eventsGroups.groupDetails'
         }
     });
 

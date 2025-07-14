@@ -12,8 +12,7 @@ export default async function registrationFlow(menu, strapi) {
 
     menu.state('beginRegistration', {
         run: () => {
-            console.log('Entering state 1'),
-                menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
+            menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
         },
         next: {
             '1': '1.1',
@@ -168,12 +167,6 @@ export default async function registrationFlow(menu, strapi) {
             const lastname = await menu.session.get('lastname') || 'User';
             const email = await menu.session.get('email')
 
-            console.log('Registering user with data:', {
-                phoneNumber,
-                password,
-                username,
-                selectedRole
-            });
             const language = "kinya";
 
             if (!password || !selectedRole) {
@@ -192,8 +185,6 @@ export default async function registrationFlow(menu, strapi) {
                     firstname,
                     lastname
                 });
-
-                console.log('Registration result:', result, '-------------');
                 if (result.success) {
                     menu.end('Registration successful 🎊 Thank you for joining EmpowerHer!');
                 } else {
