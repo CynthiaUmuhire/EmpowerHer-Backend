@@ -219,24 +219,26 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
             try {
                 const events = await strapi.service('api::event.event').find({ pagination: { page: page, pageSize: 5 }, populate: ['group'] });
                 menu.session.set('eventsPage', events.pagination.page);
+                menu.session.set('lastEvents', events.results);
                 if (events && events.results && events.results.length > 0) {
                     let msg = 'Events:\n';
                     events.results.forEach((event, idx) => {
                         msg += `${idx + 1}. ${event.title}\n`;
                     });
-                    msg += 'n. Next\n0. Previous';
+                    msg += 'n. Next\n0. Previous \nb. Back to Events & Groups\n';
                     menu.con(msg);
                 } else {
-                    menu.con('No events found.\n0. Previous');
+                    menu.con('No events found.\n0. Previous. \nb. Back to Events & Groups');
                 }
             } catch (err) {
                 console.error('Error fetching events:', err);
-                menu.con('Error fetching events.\n0. Previous');
+                menu.con('Error getting events. \nb. Back to Events & Groups');
             }
         },
         next: {
             '0': async () => { let page = await menu.session.get('eventsPage') || 0; await menu.session.set('eventsPage', page - 1 || 0); return 'eventsGroups.viewEvents'; },
             'n': async () => { let page = await menu.session.get('eventsPage') || 0; await menu.session.set('eventsPage', page + 1); return 'eventsGroups.viewEvents'; },
+            'b': 'eventsGroups',
             '*': 'eventsGroups.eventDetails'
         }
     });
@@ -250,10 +252,8 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
                 let contact = '';
                 if (event.group && event.group.assistantContact) {
                     contact = event.group.assistantContact;
-                } else if (event.plannerContact) {
-                    contact = event.plannerContact;
                 } else {
-                    contact = 'Sorry could not find the contacts now. Try again later';
+                    contact = 'N/A';
                 }
                 menu.con(`Event: ${event.title}\nContact: ${contact}\n0. Back`);
             } else {
@@ -272,24 +272,26 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
             try {
                 const groups = await strapi.service('api::group.group').find({ pagination: { page: page, pageSize: 5 } });
                 menu.session.set('groupsPage', groups.pagination.page);
+                menu.session.set('lastGroups', groups.results);
                 if (groups && groups.results && groups.results.length > 0) {
                     let msg = 'Groups:\n';
                     groups.results.forEach((group, idx) => {
                         msg += `${idx + 1}. ${group.name}\n`;
                     });
-                    msg += 'n. Next\n0. Back';
+                    msg += 'n. Next\n0. Previous \nb. Back to Events & Groups';
                     menu.con(msg);
                 } else {
-                    menu.con('No groups found.\n0. Back');
+                    menu.con('No groups found.\n0. Previous.\nb. Back to Events & Groups');
                 }
             } catch (err) {
-                menu.con('Error fetching groups.\n0. Back');
+                menu.con('Error getting groups.\n0. b. Back to Events & Groups');
             }
         },
         next: {
             '0': async () => { let page = await menu.session.get('groupsPage'); await menu.session.set('groupsPage', page - 1); return 'eventsGroups.viewGroups'; },
             'n': async () => { let page = await menu.session.get('groupsPage'); await menu.session.set('groupsPage', page + 1); return 'eventsGroups.viewGroups'; },
-            '': 'eventsGroups.groupDetails'
+            'b': 'eventsGroups',
+            '*': 'eventsGroups.groupDetails'
         }
     });
 
