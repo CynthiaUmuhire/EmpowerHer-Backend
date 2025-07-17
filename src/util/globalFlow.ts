@@ -16,12 +16,14 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.state('register', {
         run: () => {
-            menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Go back');
+            menu.con('Your username is ' + menu.args.phoneNumber + ' by default. \n 1. Change it. \n 2. Next \n 0. Exit');
         },
         next: {
             '1': '1.1',
             '2': 'firstnameMenu',
-            '0': 'start'
+            '0': () => {
+                menu.end('END Thank you for using EmpowerHer. Goodbye!');
+            }
         }
     });
     menu.state('1.1', {
