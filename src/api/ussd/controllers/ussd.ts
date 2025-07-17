@@ -36,7 +36,7 @@ export default factories.createCoreController('api::ussd.ussd', function ({ stra
                 }
 
                 const args = {
-                    phoneNumber: phoneNumber,
+                    phoneNumber: phoneNumber.replace(/\+25/gm, ''),
                     sessionId,
                     text: text || '',
                     serviceCode: serviceCode || ''
