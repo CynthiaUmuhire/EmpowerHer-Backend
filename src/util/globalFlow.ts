@@ -205,12 +205,14 @@ export default function globalFlow(menu: UssdMenu, strapi: Core.Strapi) {
 
     menu.state('eventsGroups', {
         run: () => {
-            menu.con('Welcome to Events & Groups!\n1. View Events\n2. View Groups\n0. Main Menu');
+            menu.con('Welcome to Events & Groups!\n1. View Events\n2. View Groups\n0.Exit');
         },
         next: {
             '1': 'eventsGroups.viewEvents',
             '2': 'eventsGroups.viewGroups',
-            '0': 'start'
+            '0': () => {
+                menu.end('END Thank you for using EmpowerHer. Goodbye!');
+            }
         }
     });
 
