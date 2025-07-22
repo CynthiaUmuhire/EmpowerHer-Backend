@@ -1,7 +1,21 @@
 // Placeholder for the actual SMS sending logic
 export async function sendSMS(to: string, message: string): Promise<void> {
-    // TODO: Integrate with SMS API
-    console.log(`Sending SMS to ${to}: ${message}`);
+    const apiKey = process.env.SMS_API_KEY;
+    if (!apiKey) {
+        throw new Error('SMS API key is not configured');
+    }
+    const res = await fetch('https://api.callafrica.rw/api/sendTestSMS', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ senderId: "68055f1b6205e1c8c5c78f35", phone: to, message }),
+    });
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to send SMS: ${errorText}`);
+    }
 }
 
 // Notify user about their join request status (approved/declined)
