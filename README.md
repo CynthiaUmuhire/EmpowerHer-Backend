@@ -41,7 +41,7 @@ EmpowerHer is a platform that connects support groups for adolescent mothers, en
 ## Deployed Version
 
 - **Live Backend:** [Strapi Cloud Deployed app](https://tranquil-attraction-58420851c0.strapiapp.com)
-- **Frontend Demo:** [EmpowerHer Frontend](empower-her-frontend-omega.vercel.app) *(if available)*
+- **Frontend Demo:** [EmpowerHer Frontend](empower-her-frontend-omega.vercel.app)
 
 > If you need an installable package (apk, exe, etc.), please check the releases section or contact the maintainer.
 
